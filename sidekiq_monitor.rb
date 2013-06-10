@@ -26,6 +26,10 @@ class SidekiqMonitor < Scout::Plugin
   namespace:
     name: Namespace
     notes: Redis namespace used for Sidekiq keys
+  queue:
+    name: Queue
+    notes: Filters the enqueued monitor for a specific queue.
+    attributes: advanced
   EOS
 
   def build_report
@@ -44,7 +48,15 @@ class SidekiqMonitor < Scout::Plugin
     begin
       stats = Sidekiq::Stats.new
 
-      [:enqueued, :failed, :processed].each do |nsym|
+      enqueued = if option(:queue)
+        stats.queues[option(:queue).to_s].to_i
+      else
+        stats.enqueued
+      end
+      report(:enqueued => enqueued)
+      counter(:enqueued_per_minute, enqueued, :per => :minute)
+
+      [:failed, :processed].each do |nsym|
         report(nsym => stats.send(nsym))
         counter("#{nsym}_per_minute".to_sym, stats.send(nsym), :per => :minute)
       end
