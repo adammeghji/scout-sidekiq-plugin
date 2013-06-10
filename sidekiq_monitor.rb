@@ -1,3 +1,4 @@
+$VERBOSE=false
 class SidekiqMonitor < Scout::Plugin
   needs 'redis', 'sidekiq'
 
@@ -8,15 +9,16 @@ class SidekiqMonitor < Scout::Plugin
     default: localhost
   port:
     name: Port
-    notes: Redis port to pass to the client library. 
+    notes: Redis port to pass to the client library.
     default: 6379
   db:
     name: Database
     notes: Redis database ID to pass to the client library.
     default: 0
   username:
-    name: Username
-    notes: If you're using Redis' username/password authentication
+    name: RedisToGo Username
+    notes: If you're using RedisToGo.
+    attributes: advanced
   password:
     name: Password
     notes: If you're using Redis' username/password authentication.
